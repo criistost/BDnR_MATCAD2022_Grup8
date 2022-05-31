@@ -1,0 +1,66 @@
+//Creem constraints pels nodes habitatge i individu perquè siguin únics
+CREATE CONSTRAINT UniqueHab ON (h:Habitatge) ASSERT h.id IS UNIQUE
+CREATE CONSTRAINT UniqueInd ON (i:Individu) ASSERT i.id IS UNIQUE
+
+//Carreguem les dades dels habitatges
+LOAD CSV WITH HEADERS FROM 'file:///HABITATGES.csv' AS row
+WITH toInteger(row.Id_Llar) AS id, row.Municipi AS mun, toInteger(row.Any_Padro) AS anyp, row.Carrer AS carrer, toInteger(row.Numero) AS num
+MERGE (h:Habitatge {id_hab: id, anyPadro: anyp, municipi: mun} })
+SET h.carrer = carrer, h.numero = num
+RETURN count(h)
+
+//Comprovem que s'ha fet be
+MATCH (h:Habitatge)
+RETURN h LIMIT 20
+
+//Carreguem les dades els individus
+LOAD CSV WITH HEADERS FROM 'file:///INDIVIDUAL.csv' AS row
+WITH toInteger(row.Id) AS id, toInteger(row.Year) AS any, row.name AS nom, row.surname AS cognom, row.second_surname AS cognom2
+MERGE (i:Individu {id_ind: id})
+SET i.any = any, i.nom = nom, i.cognom = cognom, i.cognom2 = cognom2
+RETURN count(i)
+
+//Comprovem que s'ha fet be
+MATCH (i:Individu)
+RETURN i LIMIT 20
+
+//Carreguem la relació de familia entre els individus
+LOAD CSV WITH HEADERS FROM 'file:///FAMILIA.csv' AS row
+WITH toInteger(row.ID_1) AS id1, row.Relacio AS relacio, row.Relacio_Harmonitzada AS relharm, toInteger(row.ID_2) AS id2
+MATCH (i:Individu {id_ind: id1})
+MATCH (e:Individu {id_ind: id2})
+MERGE (i)-[rel:FAMILIA {relacio: relacio, relacio_h: relharm}]->(e)
+RETURN count(rel)
+
+//Comprovem que s'ha fet be
+MATCH (i:Individu)-[rel:FAMILIA]->(e:Individu)
+RETURN i, rel, e LIMIT 20
+
+//Carreguem la relacio de same_as entre els individus
+LOAD CSV WITH HEADERS FROM 'file:///SAME_AS.csv' AS row
+WITH toInteger(row.Id_A) AS idA, toInteger(row.Id_B) AS idB
+MATCH (i:Individu {id_ind: idA})
+MATCH (e:Individu {id_ind: idB})
+MERGE (i)-[rel:SAME_AS]->(e)
+RETURN count(rel)
+
+//Comprovem que s'ha fet be
+MATCH (i:Individu)-[rel:SAME_AS]->(e:Individu)
+RETURN i, rel, e LIMIT 20
+
+//Carreguem la relacio de viu entre individus i habitatges
+LOAD CSV WITH HEADERS FROM 'file:///VIU.csv' AS row
+WITH toInteger(row.IND) AS IndId, row.Location AS loc, toInteger(row.Year) AS year, toInteger(row.HOUSE_ID) AS CasaId 
+MATCH (i:Individu {id_ind: IndId})
+MATCH (h:Habitatge {id_hab: CasaId, anyPadro: year, municipi: loc})
+MERGE (i)-[rel:VIU]->(h)
+
+//Comprovem que s'ha fet be
+MATCH (i:Individu)-[rel:VIU]->(h:Habitatge)
+RETURN i, rel, h LIMIT 20
+
+//Comanda per borrar tots els nodes i relacions
+MATCH (n)
+DETACH DELETE n
+
+
