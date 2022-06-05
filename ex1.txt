@@ -5,7 +5,7 @@ CREATE CONSTRAINT UniqueInd ON (i:Individu) ASSERT i.id IS UNIQUE
 //Carreguem les dades dels habitatges
 LOAD CSV WITH HEADERS FROM 'file:///HABITATGES.csv' AS row
 WITH toInteger(row.Id_Llar) AS id, row.Municipi AS mun, toInteger(row.Any_Padro) AS anyp, row.Carrer AS carrer, toInteger(row.Numero) AS num
-MERGE (h:Habitatge {id_hab: id, anyPadro: anyp, municipi: mun} })
+MERGE (h:Habitatge {id_hab: id, anyPadro: anyp, municipi: mun})
 SET h.carrer = carrer, h.numero = num
 RETURN count(h)
 
