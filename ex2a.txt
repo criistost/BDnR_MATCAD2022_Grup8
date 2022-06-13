@@ -1,0 +1,7 @@
+MATCH (i:Individu)-[v:VIU]->(h:Habitatge {anyPadro: 1866, municipi: 'CR'})
+WHERE i.nom<>'nan'
+RETURN count(i), collect(DISTINCT i.nom)
+ 
+MATCH (i:Individu)-[v:VIU]->(h:Habitatge {anyPadro: 1866, municipi: 'CR'})
+WHERE i.cognom<>'nan'
+RETURN count(i), collect(DISTINCT i.cognom)

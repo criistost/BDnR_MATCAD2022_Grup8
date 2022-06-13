@@ -1,0 +1,3 @@
+MATCH (i:Individu)-[v:VIU]->(h:Habitatge {municipi: 'SFLL'})
+WHERE h.anyPadro < 1840
+RETURN count(i) AS poblacio, h.anyPadro, collect(DISTINCT h.id_hab) AS llista_llars ORDER BY h.anyPadro
