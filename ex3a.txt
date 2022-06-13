@@ -1,0 +1,25 @@
+CALL gds.graph.project('fams',['Habitatge','Individu'],['FAMILIA','SAME_AS','VIU'])
+YIELD graphName AS graph, nodeProjection, nodeCount AS nodes, relationshipCount AS rels
+
+CALL gds.wcc.write.estimate('fams', { writeProperty: 'component' })
+YIELD nodeCount, relationshipCount, bytesMin, bytesMax, requiredMemory
+
+CALL gds.wcc.stream('fams')
+YIELD componentId, nodeId
+RETURN componentId, size(collect(nodeId)) AS mida, collect(nodeId) AS nodes
+ORDER BY mida DESC
+
+CALL gds.wcc.stream('fams')
+YIELD nodeId, componentId
+WHERE gds.util.asNode(nodeId).municipi is not null
+RETURN distinct gds.util.asNode(nodeId).municipi AS municipi, size(collect(distinct componentId)) AS midacomp
+ORDER BY municipi, midacomp
+
+CALL gds.wcc.stream('fams')
+YIELD nodeId, componentId
+WITH componentId, size(collect(nodeId)) AS mida, collect(nodeId) AS nodes
+ORDER BY mida DESC
+LIMIT 3
+MATCH (i)--(h:Habitatge)
+WHERE id(i) IN nodes
+RETURN i,h
