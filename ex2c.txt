@@ -1,0 +1,2 @@
+MATCH (i:Individu {nom: 'rafel', cognom: 'marti'})-[:VIU]->(h:Habitatge {anyPadro: 1838, municipi: 'SFLL'})<-[:VIU]-(e:Individu)
+RETURN collect(e.nom) AS convivents

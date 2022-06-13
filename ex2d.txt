@@ -1,0 +1,2 @@
+MATCH (i:Individu)-[:SAME_AS]->(e:Individu {nom: 'miguel', cognom: 'ballester'})
+RETURN i, e
