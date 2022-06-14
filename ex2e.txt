@@ -1,0 +1,2 @@
+MATCH (i:Individu {nom: 'antonio', cognom: 'farran'})-[rel]->(e:Individu) 
+RETURN e.nom AS Nom, e.cognom ASCognom,e.cognom2 AS Cognom2, type(rel) AS Tipus

@@ -1,0 +1,2 @@
+MATCH (h:Habitatge {municipi:'SFLL'}), (h1: Habitatge {municipi: 'SFLL'}) WHERE h.carrer = h1.carrer AND h.numero = h1.numero 
+RETURN h.carrer as Carrer, h.numero as Numero, size(collect(DISTINCT(h.anyPadro))) as Numero_total_habitatges, collect(DISTINCT(h.anyPadro)) as llistat_anys, collect(DISTINCT(h.id_hab)) as llistat_Ids ORDER BY Numero_total_habitatges DESC, h.carrer LIMIT 10

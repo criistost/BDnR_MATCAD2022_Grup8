@@ -1,0 +1,18 @@
+MATCH (h:Habitatge),(h2:Habitatge)
+where h.numero=h2.numero AND h.carrer=h2.carrer 
+merge (h)-[rel:MATEIX_HAB]->(h2)
+RETURN h
+order by h.anyPadro asc
+
+
+CALL gds.graph.project('Ind_Hab',['Habitatge','Individu'],['FAMILIA','VIU','MATEIX_HAB'])
+YIELD graphName AS graph, nodeProjection, nodeCount AS nodes, relationshipCount AS rels
+
+CALL gds.nodeSimilarity.write('Ind_Hab',{
+writeRelationshipType:'SIMILAR',
+writeProperty:'score',
+similarityCutoff:0.45,
+topK:5
+})
+YIELD nodesCompared, relationshipsWritten
+
